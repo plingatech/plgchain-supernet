@@ -71,8 +71,7 @@ type TestClusterConfig struct {
 	Premine              []string // address[:amount]
 	PremineValidators    []string // address[:amount]
 	StakeAmounts         []string // address[:amount]
-	MintableNativeToken  bool
-	HasBridge            bool
+	WithoutBridge        bool
 	BootnodeCount        int
 	NonValidatorCount    int
 	WithLogs             bool
@@ -191,12 +190,6 @@ func WithPremine(addresses ...types.Address) ClusterOption {
 		for _, a := range addresses {
 			h.Premine = append(h.Premine, a.String())
 		}
-	}
-}
-
-func WithMintableNativeToken(mintableToken bool) ClusterOption {
-	return func(h *TestClusterConfig) {
-		h.MintableNativeToken = mintableToken
 	}
 }
 
@@ -462,10 +455,6 @@ func NewTestCluster(t *testing.T, validatorsCount int, opts ...ClusterOption) *T
 			for _, premine := range cluster.Config.Premine {
 				args = append(args, "--premine", premine)
 			}
-		}
-
-		if cluster.Config.MintableNativeToken {
-			args = append(args, "--mintable-native-token")
 		}
 
 		if len(cluster.Config.BurnContracts) != 0 {
