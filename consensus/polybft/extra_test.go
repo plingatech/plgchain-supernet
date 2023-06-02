@@ -672,9 +672,6 @@ func TestExtra_InitGenesisValidatorsDelta(t *testing.T) {
 		extra := Extra{Validators: delta}
 
 		genesis := &chain.Genesis{
-			Config: &chain.Params{Engine: map[string]interface{}{
-				ConsensusName: polyBftConfig,
-			}},
 			ExtraData: extra.MarshalRLPTo(nil),
 		}
 
@@ -687,13 +684,13 @@ func TestExtra_InitGenesisValidatorsDelta(t *testing.T) {
 	t.Run("Invalid Extra data", func(t *testing.T) {
 		t.Parallel()
 
+<<<<<<< HEAD
 		validators := newTestValidators(t, 5)
 		polyBftConfig := PolyBFTConfig{InitialValidatorSet: validators.getParamValidators()}
 
+=======
+>>>>>>> fb7a3f3c (EVM-607 Hard-forking PoC (#1544))
 		genesis := &chain.Genesis{
-			Config: &chain.Params{Engine: map[string]interface{}{
-				ConsensusName: polyBftConfig,
-			}},
 			ExtraData: append(make([]byte, ExtraVanity), []byte{0x2, 0x3}...),
 		}
 
