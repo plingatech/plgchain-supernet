@@ -709,6 +709,8 @@ github.com/umbracle/fastrlp v0.1.0/go.mod h1:5RHgqiFjd4vLJESMWagP/E7su+5Gzk0iqqm
 =======
 github.com/umbracle/ethgo v0.1.4-0.20230620074316-bcb1d27b7ba9 h1:HukIviDm3UlWpKYaYX7Ybxs8U8srJ2wKQcq7JdTcxbM=
 github.com/umbracle/ethgo v0.1.4-0.20230620074316-bcb1d27b7ba9/go.mod h1:J+OZNfRCtbaYW3AEc0m47GhwAzlNJjcr9vO86nzOr6E=
+github.com/umbracle/ethgo v0.1.4-0.20230622091706-8230f57578b2 h1:yjKMn4wmRd1jFN2vgysTN+xbR673XzAIuBTncO1hWGo=
+github.com/umbracle/ethgo v0.1.4-0.20230622091706-8230f57578b2/go.mod h1:J+OZNfRCtbaYW3AEc0m47GhwAzlNJjcr9vO86nzOr6E=
 github.com/umbracle/fastrlp v0.1.1-0.20230504065717-58a1b8a9929d h1:HAg1Kpr9buwRxEiC2UXU9oT2AU8uCU7o3/WTH+Lt5wo=
 github.com/umbracle/fastrlp v0.1.1-0.20230504065717-58a1b8a9929d/go.mod h1:5RHgqiFjd4vLJESMWagP/E7su+5Gzk0iqqmrotR8WdA=
 >>>>>>> 06c027d7 (refernece the latest ethgo (#1641))
