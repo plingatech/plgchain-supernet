@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/umbracle/ethgo"
@@ -515,20 +516,22 @@ func deployContracts(outputter command.OutputFormatter, client *jsonrpc.Client, 
 					To:    nil, // contract deployment
 					Input: contract.artifact.Bytecode,
 				}
+				for {
+					receipt, err := txRelayer.SendTransaction(txn, deployerKey)
+					if err == nil {
 
-				receipt, err := txRelayer.SendTransaction(txn, deployerKey)
-				if err != nil {
-					return fmt.Errorf("failed sending %s contract deploy transaction: %w", contract.name, err)
+						if receipt == nil || receipt.Status != uint64(types.ReceiptSuccess) {
+							return fmt.Errorf("deployment of %s contract failed", contract.name)
+						}
+
+						results[i] = newDeployContractsResult(contract.name,
+							types.Address(receipt.ContractAddress),
+							receipt.TransactionHash,
+							receipt.GasUsed)
+						break
+					}
+					time.Sleep(5 * time.Second)
 				}
-
-				if receipt == nil || receipt.Status != uint64(types.ReceiptSuccess) {
-					return fmt.Errorf("deployment of %s contract failed", contract.name)
-				}
-
-				results[i] = newDeployContractsResult(contract.name,
-					types.Address(receipt.ContractAddress),
-					receipt.TransactionHash,
-					receipt.GasUsed)
 
 				return nil
 			}
@@ -575,7 +578,13 @@ func deployContracts(outputter command.OutputFormatter, client *jsonrpc.Client, 
 			case <-cmdCtx.Done():
 				return cmdCtx.Err()
 			default:
-				return initializer(outputter, txRelayer, rootchainConfig, deployerKey)
+				for {
+					err := initializer(outputter, txRelayer, rootchainConfig, deployerKey)
+					if err == nil {
+						return err
+					}
+					time.Sleep(5 * time.Second)
+				}
 			}
 		})
 	}
