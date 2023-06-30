@@ -40,8 +40,8 @@ const (
 	rewardTokenCodeFlag   = "reward-token-code"
 	rewardWalletFlag      = "reward-wallet"
 
-	defaultNativeTokenName     = "Polygon"
-	defaultNativeTokenSymbol   = "MATIC"
+	defaultNativeTokenName     = "Plinga"
+	defaultNativeTokenSymbol   = "PLINGA"
 	defaultNativeTokenDecimals = uint8(18)
 	minNativeTokenParamsNumber = 4
 )

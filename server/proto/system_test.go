@@ -35,7 +35,7 @@ func TestRequestValidation(t *testing.T) {
 		{
 			name: "PeersAddRequest: valid id format",
 			req: &PeersAddRequest{
-				Id: "/ip4/127.0.0.1/tcp/30301/p2p/16Uiu2HAm698AJQJJjZj4ef8PPmE1YDnPAuZnf3wGCp7ZyM3uhcAu",
+				Id: "/ip4/127.0.0.1/tcp/30342/p2p/16Uiu2HAm698AJQJJjZj4ef8PPmE1YDnPAuZnf3wGCp7ZyM3uhcAu",
 			},
 			valid: true,
 		},

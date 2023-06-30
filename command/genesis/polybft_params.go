@@ -57,7 +57,7 @@ const (
 	bridgeBlockListAdminFlag             = "bridge-block-list-admin"
 	bridgeBlockListEnabledFlag           = "bridge-block-list-enabled"
 
-	bootnodePortStart = 30301
+	bootnodePortStart = 30342
 
 	ecdsaAddressLength = 40
 	blsKeyLength       = 256
