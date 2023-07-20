@@ -625,10 +625,11 @@ func (p *TxPool) validateTx(tx *types.Transaction) error {
 		if p.forks.EIP158 && len(tx.Input) > state.TxPoolMaxInitCodeSize {
 			return runtime.ErrMaxCodeSizeExceeded
 		}
-	if tx.IsContractCreation() && p.forks.EIP158 && len(tx.Input) > state.TxPoolMaxInitCodeSize {
-		metrics.IncrCounter([]string{txPoolMetrics, "contract_deploy_too_large_txs"}, 1)
+		if tx.IsContractCreation() && p.forks.EIP158 && len(tx.Input) > state.TxPoolMaxInitCodeSize {
+			metrics.IncrCounter([]string{txPoolMetrics, "contract_deploy_too_large_txs"}, 1)
 
-		return runtime.ErrMaxCodeSizeExceeded
+			return runtime.ErrMaxCodeSizeExceeded
+		}
 	}
 
 	if tx.Type == types.DynamicFeeTx {
