@@ -89,7 +89,7 @@ func newTestPoolWithSlots(maxSlots uint64, mockStore ...store) (*TxPool, error) 
 
 	return NewTxPool(
 		hclog.NewNullLogger(),
-		forks.At(0),
+		forks,
 		storeToUse,
 		nil,
 		nil,
@@ -766,6 +766,43 @@ func TestEnqueueHandler(t *testing.T) {
 			acc.nonceToTx.lock()
 			assert.Equal(t, int(1), len(acc.nonceToTx.mapping))
 			acc.nonceToTx.unlock()
+		},
+	)
+
+	t.Run(
+		"accept new tx with nextNonce when enqueued is full",
+		func(t *testing.T) {
+			t.Parallel()
+
+			pool, err := newTestPool()
+			assert.NoError(t, err)
+			pool.SetSigner(&mockSigner{})
+
+			// mock full enqueued
+			pool.accounts.maxEnqueuedLimit = 10
+
+			// add 10 transaction in txpool i.e. max enqueued transactions
+			for i := uint64(1); i <= 10; i++ {
+				err := pool.addTx(local, newTx(addr1, i, 1))
+				assert.NoError(t, err)
+			}
+
+			assert.Equal(t, uint64(10), pool.accounts.get(addr1).enqueued.length())
+			assert.Equal(t, uint64(0), pool.accounts.get(addr1).promoted.length())
+			assert.Equal(t, uint64(0), pool.accounts.get(addr1).getNonce())
+
+			err = pool.addTx(local, newTx(addr1, 11, 1))
+			assert.True(t, errors.Is(err, ErrMaxEnqueuedLimitReached))
+
+			// add the transaction with nextNonce i.e. nonce=0
+			err = pool.addTx(local, newTx(addr1, uint64(0), 1))
+			assert.NoError(t, err)
+
+			pool.handlePromoteRequest(<-pool.promoteReqCh)
+
+			assert.Equal(t, uint64(0), pool.accounts.get(addr1).enqueued.length())
+			assert.Equal(t, uint64(11), pool.accounts.get(addr1).promoted.length())
+			assert.Equal(t, uint64(11), pool.accounts.get(addr1).getNonce())
 		},
 	)
 }
@@ -2053,7 +2090,7 @@ func Test_TxPool_validateTx(t *testing.T) {
 	t.Run("tx input larger than the TxPoolMaxInitCodeSize", func(t *testing.T) {
 		t.Parallel()
 		pool := setupPool()
-		pool.forks.EIP158 = true
+		pool.forks = chain.AllForksEnabled
 
 		input := make([]byte, state.TxPoolMaxInitCodeSize+1)
 		_, err := rand.Read(input)
@@ -2072,7 +2109,7 @@ func Test_TxPool_validateTx(t *testing.T) {
 	t.Run("tx input the same as TxPoolMaxInitCodeSize", func(t *testing.T) {
 		t.Parallel()
 		pool := setupPool()
-		pool.forks.EIP158 = true
+		pool.forks = chain.AllForksEnabled
 
 		input := make([]byte, state.TxPoolMaxInitCodeSize)
 		_, err := rand.Read(input)
@@ -2195,7 +2232,8 @@ func Test_TxPool_validateTx(t *testing.T) {
 	t.Run("eip-1559 tx placed without eip-1559 fork enabled", func(t *testing.T) {
 		t.Parallel()
 		pool := setupPool()
-		pool.forks.London = false
+		pool.forks = chain.AllForksEnabled
+		pool.forks.RemoveFork(chain.London)
 
 		tx := newTx(defaultAddr, 0, 1)
 		tx.Type = types.DynamicFeeTx
